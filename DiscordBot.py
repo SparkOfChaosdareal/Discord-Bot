@@ -13,13 +13,16 @@ bot = commands.Bot(command_prefix="bot.")
 @bot.event
 async def on_ready():
     print("ready")
+    await bot.change_presence(activity=discord.Streaming(name='I AM A GAYMER', url='https://www.twitch.tv/spark0fchaos'))
 
 # BOT EVENT CATJAM
 @bot.event
 async def on_message(self, message):
     cfg.read('config.cfg')
+    # RETURN IF MESSAGE WAS SEND BY BOT
     if message.author == bot.user:
         return
+    # PUT A CATJAM GIF IN CHAT IF CATJAM IST SET TRUE IN CFG AND MESSAGE CONTAINS WORD FROM CATJAM.JSON
     if(cfg['GIFR']['catjam'] == 'true'):
         with open('catjam.json', 'r') as catjam:
             data = json.load(catjam)
@@ -28,9 +31,20 @@ async def on_message(self, message):
                 await message.channel.send('https://tenor.com/view/cat-jam-gif-18110512') 
                 break
         catjam.close()
+    if 'ping' or 'Ping' in message.content:
+        message.channel.send("Pong!")
+
+@bot.event
+async def on_member_remove(member):
+    print(f'{member} has left a server')
+
+# SIMPLE PING COMMAND
+@bot.command
+async def ping(ctx):
+    await ctx.sent(f'Pong! {round(bot.latency * 1000)}ms')
 
 # ALLOW THE USER TO CHANGE A SPECIFIC CONFIG VALUE
-@bot.command(help="change a config value by using this command like *bot.ccfg GIFR catjam true* GIFR is the config u want to change catjam ist the value of this particualer config and true is the value u want to set it to", breif="change the config settings")
+@bot.command(aliases=['changeconfig', 'change config'], help="change a config value by using this command like *bot.ccfg GIFR catjam true* GIFR is the config u want to change catjam ist the value of this particualer config and true is the value u want to set it to", brief="change the config settings")
 async def ccfg(ctx, arg1, arg2, arg3):
     print(arg1)
     print(arg2)
