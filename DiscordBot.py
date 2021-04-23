@@ -57,4 +57,4 @@ async def print(ctx, *args):
 
 
 # RUNS THE BOT
-bot.run("ODAxNzczNDUwNDY0OTg1MTI4.YAljtg.JrZOWJ_F0liDoCn_IsqBUKDJYU0")
+bot.run("ODAxNzczNDUwNDY0OTg1MTI4.YAljtg.ykgA-Mv3K2XvQqI8xskGYqR8Njg")
