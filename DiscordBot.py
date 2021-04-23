@@ -11,7 +11,7 @@ bot = commands.Bot(command_prefix="bot.")
 
 # BOT EVENT ON_READY
 @bot.event
-async def on_ready(self):
+async def on_ready():
     print("ready")
 
 # BOT EVENT CATJAM
@@ -20,7 +20,7 @@ async def on_message(self, message):
     cfg.read('config.cfg')
     if message.author == bot.user:
         return
-    if(cfg['GIF_REACTS']['catjam'] == 'true'):
+    if(cfg['GIFR']['catjam'] == 'true'):
         with open('catjam.json', 'r') as catjam:
             data = json.load(catjam)
         for word in data:
