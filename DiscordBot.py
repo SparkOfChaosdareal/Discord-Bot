@@ -1,4 +1,5 @@
 import discord
+from discord import client
 from discord.ext import commands, tasks
 
 import json
@@ -13,6 +14,9 @@ cfg.sections()
 status = cycle(['LOOK AT MA YOUTUBE','I AM KUHL', 'LOOK AT MA TWITCH'])
 
 bot = commands.Bot(command_prefix="bot.")
+
+def ist_it_me(ctx):
+    return ctx.author.id == 273731884800933888
 
 # BOT EVENT ON_READY
 @bot.event
@@ -85,6 +89,29 @@ async def print(ctx, *args):
 @tasks.loop(seconds=5)
 async def change_status():
     await bot.change_presence(activity=discord.Streaming(name=next(status), url='twitch.tv/spark0fchaos'))
+
+@bot.command
+@commands.check(ist_it_me)
+async def load(ctx, extension):
+    bot.load_extension(f'cogs.{extension}')
+    ctx.send(f'successfully loaded {extension}')
+
+@bot.command
+@commands.check(ist_it_me)
+async def unload(ctx, extension):
+    bot.unload_extension(f'cogs.{extension}')
+    ctx.send(f'successfully unloaded {extension}')
+
+@bot.command
+@commands.check(ist_it_me)
+async def reload(ctx, extension):
+    bot.unload_extension(f'cogs.{extension}')
+    bot.load_extension(f'cogs.{extension}')
+    ctx.send(f'successfully reloaded {extension}')
+
+for filename in os.listdir('./cogs'):
+    if filename.endswith('.py'):
+        bot.load_extension(f'cogs.{filename[:-3]}')
 
 # RUNS THE BOT
 bot.run("ODAxNzczNDUwNDY0OTg1MTI4.YAljtg.ykgA-Mv3K2XvQqI8xskGYqR8Njg")
