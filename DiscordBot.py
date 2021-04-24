@@ -34,6 +34,7 @@ async def on_message(self, message):
     if 'ping' or 'Ping' in message.content:
         message.channel.send("Pong!")
 
+# PRINTS TO COLSOLE ON MEMBER REMOVE
 @bot.event
 async def on_member_remove(member):
     print(f'{member} has left a server')
@@ -42,6 +43,11 @@ async def on_member_remove(member):
 @bot.command
 async def ping(ctx):
     await ctx.sent(f'Pong! {round(bot.latency * 1000)}ms')
+
+# CLEARS AMOUNT NUMBER OF MESSAGES DEFAULT VALUE = 5
+@bot.command
+async def clear(ctx, amount=5):
+    await ctx.channel.purge(limit=amount)
 
 # ALLOW THE USER TO CHANGE A SPECIFIC CONFIG VALUE
 @bot.command(aliases=['changeconfig', 'change config'], help="change a config value by using this command like *bot.ccfg GIFR catjam true* GIFR is the config u want to change catjam ist the value of this particualer config and true is the value u want to set it to", brief="change the config settings")
