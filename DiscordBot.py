@@ -1,7 +1,7 @@
 import discord
-from discord import client
 from discord.ext import commands, tasks
 
+import asyncio
 import json
 import configparser
 import os
@@ -11,9 +11,8 @@ from itertools import cycle
 cfg = configparser.ConfigParser()
 cfg.sections()
 
-status = cycle(['LOOK AT MA YOUTUBE','I AM KUHL', 'LOOK AT MA TWITCH'])
-
 bot = commands.Bot(command_prefix="bot.")
+status = cycle(['LOOK AT MA YOUTUBE', 'I AM KUHL', 'LOOK AT MA TWITCH'])
 
 def ist_it_me(ctx):
     return ctx.author.id == 273731884800933888
@@ -21,13 +20,13 @@ def ist_it_me(ctx):
 # BOT EVENT ON_READY
 @bot.event
 async def on_ready():
-    print("ready")
     change_status.start()
+    print('ready')
     
 
 # BOT EVENT CATJAM
 @bot.event
-async def on_message(self, message):
+async def on_message(message):
     cfg.read('config.cfg')
     # RETURN IF MESSAGE WAS SEND BY BOT
     if message.author == bot.user:
@@ -38,12 +37,12 @@ async def on_message(self, message):
             data = json.load(catjam)
         for word in data:
             if word in message.content:
-                await message.channel.send('https://tenor.com/view/cat-jam-gif-18110512') 
+                await message.channel.send('a') 
                 break
         catjam.close()
-    if 'ping' or 'Ping' in message.content:
-        message.channel.send("Pong!")
-
+    #if 'ping' or 'Ping' in message.content:
+        #await message.channel.send("Pong!")
+"""
 # PRINTS TO COLSOLE ON MEMBER REMOVE
 @bot.event
 async def on_member_remove(member):
@@ -60,54 +59,34 @@ async def ping(ctx):
 async def clear(ctx, amount=5):
     await ctx.channel.purge(limit=amount)
 
-# ALLOW THE USER TO CHANGE A SPECIFIC CONFIG VALUE
-@bot.command(aliases=['changeconfig', 'change config'], help="change a config value by using this command like *bot.ccfg GIFR catjam true* GIFR is the config u want to change catjam ist the value of this particualer config and true is the value u want to set it to", brief="change the config settings")
-async def ccfg(ctx, arg1, arg2, arg3):
-    print(arg1)
-    print(arg2)
-    print(arg3)
-    cfg[arg1][arg2] = arg3
-    await ctx.channel.send("Changed value "+ arg2 + "of group" + arg1 + "to" + arg3)
-
-# PRINTS ALL THE CONFIG SETTINGS OF A SPECIFIC SECTION
-@bot.command(help="prints the config of the selectet section use this command like *bot.scfg GIFR*")
-async def scfg(ctx, arg1):
-    for word in cfg[arg1]:
-        await ctx.channel.send(word + "=" + cfg[arg1][word])
-
-# COMANND TO SEE ALL SECTIONS OF THE CONFIG.CFG FILE
-@bot.command(help="prints all sections of the config file")
-async def pcfgsec(ctx, arg):
-    await ctx.channel.send(cfg.sections())
-
 # SIMPLE PRINT COMMAND
 @bot.command(help="prints out the message you told him to print", brief="prints out ur stupid shit")
 async def print(ctx, *args):
     for arg in args:
         await ctx.send(arg)
-
-@tasks.loop(seconds=5)
+"""
+@tasks.loop(seconds=10)
 async def change_status():
-    await bot.change_presence(activity=discord.Streaming(name=next(status), url='twitch.tv/spark0fchaos'))
-
+    await bot.change_presence(activity=discord.Streaming(name=next(status), url='https://twitch.tv/spark0fchaos'))
+ 
 @bot.command
 @commands.check(ist_it_me)
 async def load(ctx, extension):
     bot.load_extension(f'cogs.{extension}')
-    ctx.send(f'successfully loaded {extension}')
+    await ctx.send(f'successfully loaded {extension}')
 
 @bot.command
 @commands.check(ist_it_me)
 async def unload(ctx, extension):
     bot.unload_extension(f'cogs.{extension}')
-    ctx.send(f'successfully unloaded {extension}')
+    await ctx.send(f'successfully unloaded {extension}')
 
 @bot.command
 @commands.check(ist_it_me)
 async def reload(ctx, extension):
     bot.unload_extension(f'cogs.{extension}')
     bot.load_extension(f'cogs.{extension}')
-    ctx.send(f'successfully reloaded {extension}')
+    await ctx.send(f'successfully reloaded {extension}')
 
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
