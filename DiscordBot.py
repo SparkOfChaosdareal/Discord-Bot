@@ -1,11 +1,16 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 import json
 import configparser
+import os
+
+from itertools import cycle
 
 cfg = configparser.ConfigParser()
 cfg.sections()
+
+status = cycle(['LOOK AT MA YOUTUBE','I AM KUHL', 'LOOK AT MA TWITCH'])
 
 bot = commands.Bot(command_prefix="bot.")
 
@@ -13,7 +18,8 @@ bot = commands.Bot(command_prefix="bot.")
 @bot.event
 async def on_ready():
     print("ready")
-    await bot.change_presence(activity=discord.Streaming(name='I AM A GAYMER', url='https://www.twitch.tv/spark0fchaos'))
+    change_status.start()
+    
 
 # BOT EVENT CATJAM
 @bot.event
@@ -46,6 +52,7 @@ async def ping(ctx):
 
 # CLEARS AMOUNT NUMBER OF MESSAGES DEFAULT VALUE = 5
 @bot.command
+@commands.has_permissions(manage_messages=True)
 async def clear(ctx, amount=5):
     await ctx.channel.purge(limit=amount)
 
@@ -75,6 +82,9 @@ async def print(ctx, *args):
     for arg in args:
         await ctx.send(arg)
 
+@tasks.loop(seconds=5)
+async def change_status():
+    await bot.change_presence(activity=discord.Streaming(name=next(status), url='twitch.tv/spark0fchaos'))
 
 # RUNS THE BOT
 bot.run("ODAxNzczNDUwNDY0OTg1MTI4.YAljtg.ykgA-Mv3K2XvQqI8xskGYqR8Njg")
