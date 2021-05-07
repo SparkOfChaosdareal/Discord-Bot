@@ -10,12 +10,15 @@ from itertools import cycle
 
 from typing_extensions import TypeAlias
 
+# CREATES A CONFIG PAERSER
 cfg = configparser.ConfigParser()
 cfg.sections()
 
+# CREATES THE BOT AND SET HIS STATUS
 bot = commands.Bot(command_prefix="bot.")
-status = cycle(['LOOK AT MA YOUTUBE', 'I AM KUHL', 'LOOK AT MA TWITCH'])
+status = cycle(['Im on da tube', 'I AM KUHL', 'twutch'])
 
+# TESTS FOR USER WHO SENT THE MESSAGE
 def ist_it_me(ctx):
     return ctx.author.id == 273731884800933888
 
@@ -24,36 +27,6 @@ def ist_it_me(ctx):
 async def on_ready():
     change_status.start()
     print('ready')
-    
-
-# BOT EVENT CATJAM
-@bot.listen()
-async def on_message(message):
-    cfg.read('config.cfg')
-    # RETURN IF MESSAGE WAS SEND BY BOT
-    if message.author == bot.user:
-        return
-    # PUT A CATJAM GIF IN CHAT IF CATJAM IST SET TRUE IN CFG AND MESSAGE CONTAINS WORD FROM CATJAM.JSON
-    if cfg['GIFR']['catjam'] == "true":
-        with open('catjam.json', 'r', encoding="utf8") as catjam:
-            data = json.load(catjam)
-        for word in data:
-            if word in message.content:
-                await message.channel.send('a') 
-                break
-        catjam.close()
-    if 'ping' in message.content or 'Ping' in message.content:
-        await message.channel.send("Pong!")
-
-# PRINTS TO COLSOLE ON MEMBER REMOVE
-@bot.event
-async def on_member_remove(member):
-    print(f'{member} has left a server')
-
-# SIMPLE PING COMMAND
-@bot.command()
-async def ping(ctx):
-    await ctx.send(f'Pong! {round(bot.latency * 1000)}ms')
 
 # CLEARS AMOUNT NUMBER OF MESSAGES DEFAULT VALUE = 5
 @bot.command()
@@ -71,7 +44,8 @@ async def pprint(ctx, *, args):
 @tasks.loop(seconds=10)
 async def change_status():
     await bot.change_presence(activity=discord.Streaming(name=next(status), url='https://twitch.tv/spark0fchaos'))
- 
+
+# COMMAND FOR LOADING AND UNLOADING COGS
 @bot.command()
 @commands.check(ist_it_me)
 async def load(ctx, extension):
