@@ -28,19 +28,7 @@ async def on_ready():
     change_status.start()
     print('ready')
 
-# CLEARS AMOUNT NUMBER OF MESSAGES DEFAULT VALUE = 5
-@bot.command()
-@commands.has_permissions(manage_messages=True)
-async def clear(ctx, amount=5):
-    await ctx.channel.purge(limit=amount)
-
-# SIMPLE PRINT COMMAND
-@bot.command()
-async def pprint(ctx, *, args):
-    for arg in args:
-        print (arg)
-        await ctx.send(arg)
-
+# CHANGES BOT STATUS EVERY 10 SECS
 @tasks.loop(seconds=10)
 async def change_status():
     await bot.change_presence(activity=discord.Streaming(name=next(status), url='https://twitch.tv/spark0fchaos'))
@@ -65,6 +53,7 @@ async def reload(ctx, extension):
     bot.load_extension(f'cogs.{extension}')
     await ctx.send(f'successfully reloaded {extension}')
 
+# LOAD COGS ON BOT STARTUP
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
