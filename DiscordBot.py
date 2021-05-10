@@ -20,7 +20,7 @@ status = cycle(['Im on da tube', 'I AM KUHL', 'twutch'])
 
 # TESTS FOR USER WHO SENT THE MESSAGE
 def ist_it_me(ctx):
-    return ctx.author.id == 273731884800933888
+    return ctx.author.id == 273731884800933888  # SparkOfChaos#8361
 
 # BOT EVENT ON_READY
 @bot.event
@@ -53,7 +53,7 @@ async def reload(ctx, extension):
     bot.load_extension(f'cogs.{extension}')
     await ctx.send(f'successfully reloaded {extension}')
 
-# LOAD COGS ON BOT STARTUP
+# LOADS COGS ON BOT STARTUP
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
