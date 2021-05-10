@@ -33,8 +33,8 @@ class Settings(commands.Cog):
 
     # COMANND TO SEE ALL SECTIONS OF THE CONFIG.CFG FILE
     @commands.command(help="prints all sections of the config file")
-    async def pcfgsec(self, ctx, arg):
-        await ctx.channel.send(cfg.sections())
+    async def pcfgsec(self, ctx):
+        await ctx.channel.send(cfg.sections(1))
     
         
     
