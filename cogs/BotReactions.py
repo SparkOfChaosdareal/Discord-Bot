@@ -14,7 +14,7 @@ class BotReactions(commands.Cog):
         self.bot = bot
 
     # EVENTS
-    """ @commands.Cog.listener()
+    @commands.Cog.listener()
     async def on_message(self, message):
         cfg.read('config.cfg')
         # RETURN IF MESSAGE WAS SEND BY BOT
@@ -30,7 +30,7 @@ class BotReactions(commands.Cog):
                     break
             catjam.close()
         if 'ping' in message.content or 'Ping' in message.content:
-            await message.channel.send("Pong!") """
+            await message.channel.send("Pong!")
 
     @commands.Cog.listener()
     async def on_member_remove(member):

@@ -12,7 +12,6 @@ class moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    # COMMANDS
     # CLEARS AMOUNT NUMBER OF MESSAGES DEFAULT VALUE = 5
     @commands.command()
     @commands.has_permissions(manage_messages=True)
