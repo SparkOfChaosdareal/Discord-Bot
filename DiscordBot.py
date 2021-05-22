@@ -33,7 +33,7 @@ async def on_ready():
 async def change_status():
     await bot.change_presence(activity=discord.Streaming(name=next(status), url='https://twitch.tv/spark0fchaos'))
 
-# COMMAND FOR LOADING AND UNLOADING COGS
+# COMMANDS FOR LOADING AND UNLOADING COGS
 @bot.command()
 @commands.check(ist_it_me)
 async def load(ctx, extension):

@@ -17,12 +17,9 @@ class Settings(commands.Cog):
     async def 
     """   
     # ALLOW THE USER TO CHANGE A SPECIFIC CONFIG VALUE
-    @commands.command(aliases=['changeconfig', 'change config'], help="change a config value by using this command like *bot.ccfg GIFR catjam true* GIFR is the config u want to change catjam ist the value of this particualer config and true is the value u want to set it to", brief="change the config settings")
-    async def ccfg(self, ctx, arg1, arg2, arg3):
+    @commands.command(aliases=['changeconfig', 'change config', 'ccfg'], help="change cfg like *bot.ccfg GIFR catjam true* GIFR is the config u want to change catjam ist the value of this particualer config and true is the value u want to set it to", brief="change the config settings")
+    async def cfgChange(self, ctx, Section, arg, Value):
         cfg.read('config.cfg')
-        print(arg1)
-        print(arg2)
-        print(arg3)
         # with open('No.json', 'r', encoding="utf8") as No:
         #     no = json.load(No)
         # with open('Yes.json', 'r', encoding="utf8") as Yes:
@@ -30,19 +27,22 @@ class Settings(commands.Cog):
         # if arg3 in no:
         #     cfg[arg1][arg2] = 'false'
         # if arg3 in yes:
-        cfg[arg1][arg2] = arg3
-        await ctx.channel.send("Changed value " + arg2 + " of group " + arg1 + " to " + arg3)
+        Value2 = str(Value)
+        cfg.set(Section, arg, Value2)
+        with open('config.cfg', 'w') as configfile:
+            cfg.write(configfile)
+        await ctx.channel.send("Changed value " + arg + " of group " + Section + " to " + Value)
 
     # PRINTS ALL THE CONFIG SETTINGS OF A SPECIFIC SECTION
-    @commands.command(help="prints the config of the selectet section use this command like *bot.scfg GIFR*")
-    async def scfg(self, ctx, arg1):
+    @commands.command(aliases=['gcfg'],help="shows config group like *bot.scfg GIFR*")
+    async def cfgGroup(self, ctx, arg1):
         cfg.read('config.cfg')
         for word in cfg[arg1]:
             await ctx.channel.send(word + " = " + cfg[arg1][word])
 
     # COMANND TO SEE ALL SECTIONS OF THE CONFIG.CFG FILE
-    @commands.command(help="prints all sections of the config file")
-    async def pcfgsec(self, ctx):
+    @commands.command(aliases=['scfg'],help="prints cfg sections")
+    async def cfgSections(self, ctx):
         cfg.read('config.cfg')
         print (cfg.sections())
         await ctx.channel.send(cfg.sections())

@@ -13,7 +13,7 @@ class BotReactions(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    # EVENTS
+    """ # EVENTS
     @commands.Cog.listener()
     async def on_message(self, message):
         cfg.read('config.cfg')
@@ -31,7 +31,7 @@ class BotReactions(commands.Cog):
             catjam.close()
         if 'ping' in message.content or 'Ping' in message.content:
             await message.channel.send("Pong!")
-
+ """
     @commands.Cog.listener()
     async def on_member_remove(member):
         print(f'{member} has left a server')
