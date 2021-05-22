@@ -5,6 +5,7 @@ import asyncio
 import json
 import configparser
 import os
+import sqlite3
 
 from itertools import cycle
 
@@ -14,13 +15,21 @@ from typing_extensions import TypeAlias
 cfg = configparser.ConfigParser()
 cfg.sections()
 
+# DATABESE SETUP
+conn = sqlite3.connect('DataBase.db')
+c = conn.cursor()
+
+c.execute('''CREATE TABLE IF NOT EXISTS Servers ([Server_No] INTEGER PRIMAR KEY, [Server_Name] text)''')
+c.execute('''CREATE TABLE IF NOT EXISTS Users ([User_ID] INTEGER PRIMAR KEY, [User_Name] text)''')
+c.execute('''CREATE TABLE IF NOT EXISTS Is_On_Server ([User_ID] integer, [Server_No] integer)''')
+c.execute('''CREATE TABLE IF NOT EXISTS SFX ([Sound_ID] INTEGER PRIMAR KEY, [Belongs_To_Server] integer, [Sound_Name] text, [Is_Public] integer , [Sound_Path] text)''')
+
 # CREATES THE BOT AND SET HIS STATUS
 bot = commands.Bot(command_prefix="bot.")
 status = cycle(['Im on da tube', 'I AM KUHL', 'twutch'])
 
-# TESTS FOR USER WHO SENT THE MESSAGE
-def ist_it_me(ctx):
-    return ctx.author.id == 273731884800933888  # SparkOfChaos#8361
+def is_admin(ctx):
+    return ctx.author.guild_permissions.administrator
 
 # BOT EVENT ON_READY
 @bot.event
@@ -35,19 +44,19 @@ async def change_status():
 
 # COMMANDS FOR LOADING AND UNLOADING COGS
 @bot.command()
-@commands.check(ist_it_me)
+@commands.check(is_admin)
 async def load(ctx, extension):
     bot.load_extension(f'cogs.{extension}')
     await ctx.send(f'successfully loaded {extension}')
 
 @bot.command()
-@commands.check(ist_it_me)
+@commands.check(is_admin)
 async def unload(ctx, extension):
     bot.unload_extension(f'cogs.{extension}')
     await ctx.send(f'successfully unloaded {extension}')
 
 @bot.command()
-@commands.check(ist_it_me)
+@commands.check(is_admin)
 async def reload(ctx, extension):
     bot.unload_extension(f'cogs.{extension}')
     bot.load_extension(f'cogs.{extension}')
