@@ -14,9 +14,6 @@ from discord.ext.commands.bot import Bot
 cfg = configparser.ConfigParser()
 cfg.sections()
 
-con = sqlite3.connect('DataBase.db')
-c = con.cursor()
-
 class SFX(commands.Cog):
 
     def __init__(self, bot):
@@ -65,6 +62,8 @@ class SFX(commands.Cog):
         else:
             # SFX with that name already exists
             await ctx.channel.send(f'Soundeffect with name *{SoundName}* already exists on this server')
+
+        con.close()
         
     @commands.command()
     async def play(self, ctx, SoundName):
@@ -72,9 +71,9 @@ class SFX(commands.Cog):
             await ctx.send("You gotta be in a Voice Channel to do that shit")
             return
 
-        VoiceChannel = ctx.author.voice.channel
+        VoiceChannel: discord.VoiceChannel = ctx.author.voice.channel
         try:
-            VoiceChannel = await VoiceChannel.connect()
+            await VoiceChannel.connect()
 
         # CATCHIING ERROR THAT CAN OCCUR WHILE JOINING A VOICE
         except discord.Forbidden:
@@ -106,11 +105,11 @@ class SFX(commands.Cog):
             await ctx.send("File not found")
         
         try:
-            VoiceChannel.play(source, after=lambda: print("played SFX"))
+            ctx.voice_client.play(source, after=lambda: print("played SFX"))
         # catching most common errors that can occur while playing effects
         except discord.Forbidden:
             await ctx.send("There was issue playing a sound effect. please check if bot has speak permission")
-            await VoiceChannel.disconnect()
+            await ctx.voice_client.disconnect()
             return
         
         except TimeoutError:
@@ -132,9 +131,82 @@ class SFX(commands.Cog):
         VoiceChannel.stop()
 
         await VoiceChannel.disconnect()
+        con.close()
 
-        
+    @commands.command(aliases=['search', 's'])
+    async def Search(self, ctx, SearchTerm):
+        SearchResult = c.execute(
+            f"SELECT Sound_ID, Sound_Name FROM SFX WHERE Sound_Name is like '%{SearchTerm}%' AND Is_Public = 1 UNION SELECT Sound_ID, Sound_Name FROM SFX WHERE Sound_Name is like '%{SearchTerm}%' AND Belongs_To_Server = {ctx.guild.id}")
+        #print (SearchResult.fetchall())
+        await ctx.channel.send(SearchResult.fetchall())
+        con.close()
     
+    @commands.command(aliases=['list', 'l'])
+    async def List(self, ctx):
+        SearchResult = c.execute(
+            f"SELECT Sound_ID, Sound_Name, Is_Public FROM SFX WHERE Belongs_To_Server = {ctx.guild.id}")
+        #print (SearchResult.fetchall())
+        await ctx.channel.send(SearchResult.fetchall())
+        con.close()
+
+    @commands.command(aliases=['publicity', 'public'], help = 'Change publicity of Server Sound Effekt with SoundID to either Public(1) or Private(0)')
+    async def change_privacy(self, ctx, SoundID, Public_):
+        if not c.execute(f"SELECT Sound_ID FROM SFX WHERE Sound_ID = '{SoundID}' AND Belongs_To_Server = {ctx.guild.id}").rowcount == -1:
+            c.execute(f"UPDATE SFX SET Is_Public = {Public_} WHERE Sound_ID = {SoundID}")
+            con.commit()
+            await ctx.channel.send(f"Updated privacy of SoundEffekt {SoundID} to {Public_} (0 = private / 1 = public)")
+        else:
+            await ctx.channel.send(f"Sry there's no Sound with the ID {SoundID} that Belongs to this server")
+        con.close()
+
+    @commands.command()
+    async def join(self, ctx, *, channel: discord.VoiceChannel):
+        """Joins a voice channel"""
+
+        if ctx.voice_client is not None:
+            return await ctx.voice_client.move_to(channel)
+
+        await channel.connect()
+    
+    @commands.command()
+    async def volume(self, ctx, volume: int):
+        """Changes the player's volume"""
+
+        if ctx.voice_client is None:
+            return await ctx.send("Not connected to a voice channel.")
+
+        ctx.voice_client.source.volume = volume / 100
+        await ctx.send(f"Changed volume to {volume}%")
+
+    @commands.command()
+    async def stop(self, ctx):
+        """Stops and disconnects the bot from voice"""
+
+        await ctx.voice_client.disconnect()
+
+    @play.before_invoke
+    #@yt.before_invoke
+    #@stream.before_invoke
+    async def ensure_voice(self, ctx):
+        if ctx.voice_client is None:
+            if ctx.author.voice:
+                await ctx.author.voice.channel.connect()
+            else:
+                await ctx.send("You are not connected to a voice channel.")
+                raise commands.CommandError("Author not connected to a voice channel.")
+        elif ctx.voice_client.is_playing():
+            ctx.voice_client.stop()
+    
+    @upload.before_invoke
+    @play.before_invoke
+    @change_privacy.before_invoke
+    @List.before_invoke
+    async def build_database_connection(self, ctx):
+        global con
+        con = sqlite3.connect('DataBase.db')
+        global c
+        c = con.cursor()
+        
 
 def setup(bot):
     bot.add_cog(SFX(bot))

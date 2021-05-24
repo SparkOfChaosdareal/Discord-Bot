@@ -25,7 +25,7 @@ c.execute('''CREATE TABLE IF NOT EXISTS Is_On_Server (User_ID integer, Server_ID
 c.execute('''CREATE TABLE IF NOT EXISTS SFX (Sound_ID INTEGER PRIMARY KEY AUTOINCREMENT, Belongs_To_Server integer, Sound_Name text, Is_Public integer , Sound_Path text)''')
 
 # CREATES THE BOT AND SET HIS STATUS
-bot = commands.Bot(command_prefix="bot.")
+bot = commands.Bot(command_prefix=commands.when_mentioned_or("bot."))
 status = cycle(['Im on da tube', 'I AM KUHL', 'twutch'])
 
 def is_admin(ctx):
