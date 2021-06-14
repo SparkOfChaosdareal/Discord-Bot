@@ -72,4 +72,4 @@ for filename in os.listdir('./cogs'):
         bot.load_extension(f'cogs.{filename[:-3]}')
 
 # RUNS THE BOT
-bot.run("ODM1NDk1ODg2NzY2NzM1Mzcw.YIQSLg.S20ieFv3RFN_TfP3lXS4t_ar5VE")
+bot.run("<BOT TOKEN>")
